@@ -1,0 +1,1374 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2학기 영어 단어장</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#f5f5f7;color:#171717;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
+.app{height:100dvh;display:flex;flex-direction:column;max-width:720px;margin:auto}
+header{padding:18px 18px 10px;text-align:center}
+h1{font-size:20px;margin:0 0 8px}
+.progress{font-size:13px;color:#777}
+.bar{height:6px;background:#e4e4e7;border-radius:9px;margin:10px 18px 0;overflow:hidden}
+.fill{height:100%;width:0;background:#222;transition:.2s}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:20px 18px}
+.card{width:min(100%,620px);height:min(62vh,460px);min-height:320px;background:white;border-radius:28px;box-shadow:0 10px 35px #00000012;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px;user-select:none;touch-action:none;transition:transform .18s,opacity .18s;overflow:auto}
+.card.swipe-left{transform:translateX(-120%) rotate(-8deg);opacity:0}
+.card.swipe-right{transform:translateX(120%) rotate(8deg);opacity:0}
+.word{font-size:clamp(25px,6.5vw,44px);font-weight:750;text-align:center;line-height:1.15;overflow-wrap:anywhere}
+.hint{margin-top:18px;color:#999;font-size:13px}
+.hint2{display:none;margin-top:14px;color:#b7b7bf;font-size:12px}
+.card.stage1 .hint2{display:block}
+.meaning{margin-top:24px;font-size:clamp(19px,4.6vw,27px);font-weight:600;text-align:center;line-height:1.4;color:#333;display:none}
+.card.stage1 .meaning,.card.stage2 .meaning{display:block}
+.card.stage1 .hint,.card.stage2 .hint{display:none}
+.synant{display:none;margin-top:22px;padding-top:18px;border-top:1px solid #eee;width:100%;max-width:420px;font-size:14.5px;line-height:1.9;text-align:center}
+.card.stage2 .synant{display:block}
+.synant .row{margin:2px 0}
+.synant .tag{display:inline-block;min-width:70px;font-weight:800;font-size:12px;padding:3px 8px;border-radius:8px;margin-right:6px}
+.synant .tag.syn{background:#e6f7ec;color:#12894f}
+.synant .tag.ant{background:#fdeceb;color:#c0392b}
+.synant .val{color:#333;font-weight:600}
+.synant .none{color:#bbb;font-weight:400}
+footer{padding:12px 18px calc(18px + env(safe-area-inset-bottom));text-align:center}
+.controls{display:flex;gap:10px;justify-content:center}
+button{border:0;border-radius:16px;padding:13px 18px;font-size:15px;font-weight:650;background:#e9e9ec;color:#222}
+button:active{transform:scale(.97)}
+#know{background:#222;color:white}
+#dont{background:#ddd}
+.sub{margin-top:9px;color:#999;font-size:12px}
+.summary{display:none;position:fixed;inset:0;background:#f5f5f7;z-index:5;padding:35px 22px;overflow:auto;text-align:center}
+.summary h2{margin-top:20px}
+.stats{font-size:18px;line-height:1.8;margin:20px}
+.unknown{max-width:620px;margin:20px auto;text-align:left;background:white;border-radius:18px;padding:18px}
+.unknown div{padding:7px 0;border-bottom:1px solid #eee}
+.position{margin-top:8px;font-size:12px;color:#aaa}
+.top{display:flex;justify-content:flex-start;margin-bottom:8px}
+#listBtn{padding:9px 13px;border-radius:12px;background:#e9e9ec;font-size:14px}
+.wordList{display:none;position:fixed;inset:0;z-index:20;background:#f5f5f7;overflow:auto;padding:20px 16px calc(30px + env(safe-area-inset-bottom))}
+.wordList.show{display:block}
+.listHeader{position:sticky;top:0;z-index:2;background:#f5f5f7;padding:5px 0 15px;display:flex;align-items:center;justify-content:space-between}
+.listHeader h2{margin:0;font-size:21px}
+.closeList{padding:9px 13px;border-radius:12px}
+.listSearch{width:100%;border:0;outline:0;background:white;border-radius:14px;padding:13px 15px;font-size:15px;margin-bottom:12px}
+.wordItems{display:flex;flex-direction:column;gap:7px}
+.wordItem{background:white;border-radius:14px;padding:12px 14px;text-align:left;display:flex;align-items:center;gap:12px;cursor:pointer}
+.wordItem:active{transform:scale(.98)}
+.wordNumber{min-width:38px;color:#999;font-size:12px}
+.wordEnglish{font-weight:700;font-size:15px}
+.wordKorean{color:#777;font-size:13px;margin-top:3px}
+.wordItem.known{border-left:4px solid #34c759}
+.wordItem.unknown{border-left:4px solid #ff3b30}
+.wordBadge{margin-left:auto;font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;white-space:nowrap;flex-shrink:0}
+.wordBadge.known{background:#34c759;color:white}
+.wordBadge.unknown{background:#ff3b30;color:white}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<div class="top"><button id="listBtn">☰ 단어 목록</button></div>
+<h1>2학기 영어 단어장</h1>
+<div class="progress" id="progress">1 / 514</div>
+<div class="bar"><div class="fill" id="fill"></div></div>
+<div class="position">↕️ 위아래로 밀어서 단어 이동</div>
+</header>
+<main>
+<div class="card" id="card">
+<div class="word" id="word"></div>
+<div class="hint">단어를 터치하면 뜻이 나와요</div>
+<div class="hint2">한 번 더 터치하면 동의어·반의어가 나와요</div>
+<div class="meaning" id="meaning"></div>
+<div class="synant" id="synant"></div>
+</div>
+</main>
+<footer>
+<div class="controls">
+<button id="know">← 알았다</button>
+<button id="dont">몰랐다 →</button>
+</div>
+<div class="sub">카드를 왼쪽으로 밀면 「알았다」 · 오른쪽으로 밀면 「몰랐다」</div>
+</footer>
+</div>
+
+<div class="summary" id="summary">
+<h2>끝! 🎉</h2>
+<div class="stats" id="stats"></div>
+<div class="unknown" id="unknown"></div>
+<button onclick="restart()">전체 다시 보기</button>
+<button id="reviewUnknown" onclick="startReviewUnknown()" style="display:none;margin-top:10px;">몰랐던 단어만 보기</button>
+<button onclick="resetAll()" style="margin-top:10px;">전체 초기화</button>
+</div>
+
+<div class="wordList" id="wordList">
+<div class="listHeader">
+<h2>단어 목록</h2>
+<button class="closeList" id="closeListBtn">닫기</button>
+</div>
+<input class="listSearch" id="listSearch" placeholder="영어 또는 한글 뜻 검색">
+<div class="wordItems" id="wordItems"></div>
+</div>
+
+<script>
+/* =========================================================
+   단어 목록 (원본 데이터)
+========================================================= */
+const rawWords = [
+{"en":"no doubt","ko":"틀림없이, 아마"},
+{"en":"similarly","ko":"마찬가지로, 유사하게"},
+{"en":"two-way","ko":"양방향의"},
+{"en":"process","ko":"프로세스, 과정"},
+{"en":"perceive","ko":"감지하다, 인지하다"},
+{"en":"publish","ko":"출판하다"},
+{"en":"scientific","ko":"과학의"},
+{"en":"restate","ko":"재진술하다"},
+{"en":"as follows","ko":"다음과 같이"},
+{"en":"experiment","ko":"실험"},
+{"en":"publication","ko":"출판"},
+{"en":"previous","ko":"이전의"},
+{"en":"purchase","ko":"구매품, 구매"},
+{"en":"behavior","ko":"행동"},
+{"en":"likelihood","ko":"가능성, 일어날 가능성"},
+{"en":"determine","ko":"알아내다, 결정하다"},
+{"en":"satisfied","ko":"만족한"},
+{"en":"unpaid","ko":"무급의, 무보수의"},
+{"en":"ambassador","ko":"대사"},
+{"en":"persuade","ko":"설득하다"},
+{"en":"monitor","ko":"모니터하다, 감시하다"},
+{"en":"avoid","ko":"피하다"},
+{"en":"negative","ko":"부정적인"},
+{"en":"word-of-mouth","ko":"입소문, 말로 전하는"},
+{"en":"research","ko":"조사"},
+{"en":"detail","ko":"세부 사항"},
+{"en":"organize","ko":"조직하다"},
+{"en":"polite","ko":"정중한, 예의바른"},
+{"en":"permission","ko":"허가, 허락"},
+{"en":"particular","ko":"특정한"},
+{"en":"location","ko":"장소, 지역"},
+{"en":"drive","ko":"~한 상태로 만들다"},
+{"en":"matter","ko":"중요하다"},
+{"en":"reveal","ko":"드러내다"},
+{"en":"crucial","ko":"중요한"},
+{"en":"tension","ko":"긴장(감)"},
+{"en":"conflict","ko":"갈등"},
+{"en":"timetable","ko":"시간표"},
+{"en":"blueprint","ko":"(설계용) 청사진"},
+{"en":"negotiate","ko":"협상하다"},
+{"en":"traditional","ko":"전통적인"},
+{"en":"approach","ko":"접근법"},
+{"en":"agreement","ko":"합의, 동의"},
+{"en":"one-off","ko":"일회성의, 단 한 번의"},
+{"en":"transaction","ko":"거래"},
+{"en":"repeatedly","ko":"반복적으로"},
+{"en":"spouse","ko":"배우자"},
+{"en":"colleague","ko":"(직장) 동료"},
+{"en":"customer","ko":"고객"},
+{"en":"client","ko":"의뢰인, 고객"},
+{"en":"in view of","ko":"~의 관점에서, ~을 고려하여"},
+{"en":"achieve","ko":"얻다, 획득하다"},
+{"en":"at the same time","ko":"동시에"},
+{"en":"interdependent","ko":"상호 의존적인"},
+{"en":"long-term","ko":"장기적인"},
+{"en":"win-win","ko":"양쪽[쌍방]에 유리한"},
+{"en":"possess","ko":"(능력 등을) 갖고 있다"},
+{"en":"a host of","ko":"많은, 다수의"},
+{"en":"desirable","ko":"바람직한"},
+{"en":"be free of","ko":"~이 없다, ~에서 자유롭다"},
+{"en":"intelligent","ko":"지적인"},
+{"en":"characteristic","ko":"특징, 특질"},
+{"en":"fair-minded","ko":"공정한"},
+{"en":"prejudiced","ko":"편견을 가진"},
+{"en":"behind the wheel","ko":"운전하여"},
+{"en":"phenomenon","ko":"현상"},
+{"en":"survey","ko":"(설문) 조사"},
+{"en":"reliable","ko":"신뢰할 수 있는, 믿을 만한"},
+{"en":"in terms of","ko":"~의 면에서, ~에 관해서"},
+{"en":"get along with","ko":"~과 잘 지내다"},
+{"en":"social","ko":"사회의"},
+{"en":"economic","ko":"경제의"},
+{"en":"situation","ko":"상황"},
+{"en":"wage","ko":"임금, 급료"},
+{"en":"condition","ko":"여건, 조건"},
+{"en":"improve","ko":"개선되다, 향상되다"},
+{"en":"gradually","ko":"점차"},
+{"en":"form","ko":"형태"},
+{"en":"transport","ko":"운송, 수송"},
+{"en":"industrial","ko":"산업의"},
+{"en":"revolution","ko":"혁명"},
+{"en":"railway","ko":"철도"},
+{"en":"seaside","ko":"해안가, 바닷가"},
+{"en":"resort","ko":"리조트, 휴양지"},
+{"en":"coast-to-coast","ko":"대륙 횡단의"},
+{"en":"arrival","ko":"출현, 도래"},
+{"en":"tourism","ko":"관광 산업, 관광"},
+{"en":"growth","ko":"성장, 발전"},
+{"en":"tire of","ko":"~에 싫증이 나다"},
+{"en":"get sick of","ko":"~에 질리다"},
+{"en":"interest","ko":"흥미"},
+{"en":"bottom line","ko":"요점, 핵심"},
+{"en":"nerve cell","ko":"신경 세포"},
+{"en":"reduce","ko":"약화하다, 줄이다"},
+{"en":"initial","ko":"초기의"},
+{"en":"response","ko":"반응"},
+{"en":"stimulus","ko":"자극"},
+{"en":"stimuli","ko":"자극들"},
+{"en":"occur","ko":"일어나다, 발생하다"},
+{"en":"neuron","ko":"뉴런(신경 세포)"},
+{"en":"evolve","ko":"진화하다"},
+{"en":"ancestor","ko":"조상, 선조"},
+{"en":"survival value","ko":"생존가, 생존가치"},
+{"en":"boredom","ko":"지루함"},
+{"en":"environment","ko":"환경"},
+{"en":"excitement","ko":"흥분, 자극"},
+{"en":"turn down","ko":"~을 낮추다, ~을 약하게 하다"},
+{"en":"threat","ko":"위협"},
+{"en":"stand out","ko":"두드러지다"},
+{"en":"firefly","ko":"반딧불이"},
+{"en":"shape","ko":"형성하다"},
+{"en":"construction","ko":"건축물, 건설"},
+{"en":"carve","ko":"조각하다"},
+{"en":"standing stone","ko":"입석, 선돌"},
+{"en":"erect","ko":"세우다"},
+{"en":"hunter-gatherer","ko":"수렵 채집인"},
+{"en":"erection","ko":"세우기"},
+{"en":"multiple","ko":"여러 개의, 다수의"},
+{"en":"successive","ko":"잇따른, 연속적인"},
+{"en":"generation","ko":"세대"},
+{"en":"innovator","ko":"혁신가"},
+{"en":"settle down","ko":"정착하다"},
+{"en":"process","ko":"과정"},
+{"en":"farming society","ko":"농업(농경) 사회"},
+{"en":"end up -ing","ko":"결국 ~하게 되다"},
+{"en":"radically","ko":"근본적으로"},
+{"en":"transform","ko":"바꾸다, 변형시키다"},
+{"en":"innovate","ko":"혁신하다"},
+{"en":"comment","ko":"댓글, 의견"},
+{"en":"coach","ko":"감독하다, 코치하다"},
+{"en":"go for","ko":"~도 마찬가지이다, ~에 해당하다"},
+{"en":"professional","ko":"전문가"},
+{"en":"degree","ko":"학위"},
+{"en":"executive","ko":"임원, 이사"},
+{"en":"decade","ko":"10년"},
+{"en":"face","ko":"직면하다"},
+{"en":"criticism","ko":"비난"},
+{"en":"community","ko":"지역 사회"},
+{"en":"run","ko":"운영하다"},
+{"en":"surgery","ko":"수술"},
+{"en":"accountant","ko":"회계사"},
+{"en":"feedback","ko":"피드백, 의견"},
+{"en":"tough","ko":"엄격한"},
+{"en":"guideline","ko":"지침"},
+{"en":"brain death","ko":"뇌사"},
+{"en":"transplantation","ko":"장기 이식"},
+{"en":"transfer","ko":"전달하다"},
+{"en":"organ","ko":"장기"},
+{"en":"under consideration","ko":"고려 중인"},
+{"en":"legal","ko":"법적인"},
+{"en":"requirement","ko":"요건, 필요 조건"},
+{"en":"specify","ko":"명시하다"},
+{"en":"potential","ko":"잠재적인"},
+{"en":"regulation","ko":"규정"},
+{"en":"diagnose","ko":"진단하다"},
+{"en":"questionable","ko":"의문인, 확실치 않은"},
+{"en":"suspicion","ko":"의심"},
+{"en":"maintain","ko":"유지하다"},
+{"en":"mistaken","ko":"잘못된"},
+{"en":"unreliable","ko":"신뢰하기 어려운, 믿을 수 없는"},
+{"en":"precision","ko":"정확성"},
+{"en":"consistency","ko":"일관성"},
+{"en":"criterion","ko":"판단의 기준, 표준"},
+{"en":"criteria","ko":"(pl) 기준, 표준들"},
+{"en":"immediate","ko":"즉각적인"},
+{"en":"burial","ko":"매장"},
+{"en":"advertiser","ko":"광고주"},
+{"en":"display","ko":"보여 주다, 전시하다"},
+{"en":"considerable","ko":"상당한, 많은"},
+{"en":"facility","ko":"재능, 재주, 솜씨"},
+{"en":"adapt","ko":"적응시키다"},
+{"en":"come up with","ko":"~을 고안하다, ~을 생각해 내다"},
+{"en":"market status","ko":"시장 지위"},
+{"en":"promote","ko":"홍보하다"},
+{"en":"yeast","ko":"효모"},
+{"en":"ingredient","ko":"재료"},
+{"en":"homemade","ko":"집에서 만든"},
+{"en":"consumer","ko":"소비자"},
+{"en":"demand","ko":"수요(량), 요구"},
+{"en":"hire","ko":"고용하다"},
+{"en":"strategy","ko":"전략"},
+{"en":"claim","ko":"주장; 주장하다"},
+{"en":"boost","ko":"늘리다, 끌어올리다"},
+{"en":"turn A into B","ko":"A를 B로 바꾸다"},
+{"en":"shortly thereafter","ko":"그 직후"},
+{"en":"transform A into B","ko":"A를 B로 바꾸다, 변형하다"},
+{"en":"reposition","ko":"이미지의 전환을 꾀하다"},
+{"en":"philosophical","ko":"철학적인"},
+{"en":"shift","ko":"변화"},
+{"en":"industrial","ko":"산업의"},
+{"en":"competitive","ko":"경쟁적인"},
+{"en":"geographically","ko":"지리적으로"},
+{"en":"spread out","ko":"~을 퍼뜨리다"},
+{"en":"client","ko":"고객"},
+{"en":"quality","ko":"양질의, 질 좋은"},
+{"en":"premature","ko":"너무 이른, 시기상조의"},
+{"en":"reasonable","ko":"합리적인, (가격이) 적정한"},
+{"en":"equally","ko":"마찬가지로"},
+{"en":"essential","ko":"매우 중요한"},
+{"en":"customer","ko":"고객"},
+{"en":"modernization","ko":"현대화"},
+{"en":"revolution","ko":"혁명"},
+{"en":"meet","ko":"충족시키다"},
+{"en":"diverse","ko":"다양한"},
+{"en":"complex","ko":"복잡한"},
+{"en":"evidence","ko":"증거"},
+{"en":"demonstrate","ko":"보여 주다, 설명하다"},
+{"en":"attention","ko":"주의(집중), 주목"},
+{"en":"reward","ko":"보상하다"},
+{"en":"notice","ko":"알아채다"},
+{"en":"avoid","ko":"피하다"},
+{"en":"auditory","ko":"청각의"},
+{"en":"direct one's attention","ko":"주의를 기울이다"},
+{"en":"expansion","ko":"확장"},
+{"en":"represent","ko":"나타내다"},
+{"en":"string","ko":"(악기의) 현"},
+{"en":"precisely","ko":"정확하게"},
+{"en":"vital","ko":"필수적인"},
+{"en":"spatial","ko":"공간의"},
+{"en":"physical","ko":"물리적인"},
+{"en":"architecture","ko":"구조, 구성"},
+{"en":"eyesight","ko":"시력"},
+{"en":"species","ko":"종(種)"},
+{"en":"climatic","ko":"기후의"},
+{"en":"requirement","ko":"요건"},
+{"en":"endure","ko":"견디다"},
+{"en":"degree","ko":"정도 (온도의 단위인 도)"},
+{"en":"satisfy","ko":"충족시키다"},
+{"en":"force","ko":"강요하다"},
+{"en":"creature","ko":"생명체"},
+{"en":"immobile","ko":"움직이지 않는"},
+{"en":"be capable of","ko":"~할 수 있다"},
+{"en":"seed","ko":"씨앗"},
+{"en":"larva","ko":"유충"},
+{"en":"occupy","ko":"점유하다"},
+{"en":"ease","ko":"완화하다"},
+{"en":"obtain","ko":"확보하다, 얻다"},
+{"en":"survive","ko":"생존하다"},
+{"en":"reproduce","ko":"번식하다"},
+{"en":"potential","ko":"잠재력"},
+{"en":"instead of","ko":"~ 대신에"},
+{"en":"initial","ko":"초기의"},
+{"en":"solo","ko":"혼자서 하는, 단독의"},
+{"en":"generate","ko":"만들어 내다, 생성하다"},
+{"en":"separately","ko":"개별적으로, 각자"},
+{"en":"pool","ko":"(공동으로) 모으다"},
+{"en":"preserve","ko":"유지하다, 보존하다"},
+{"en":"independent","ko":"독립적인"},
+{"en":"evaluate","ko":"평가하다"},
+{"en":"refine","ko":"다듬다, 개선하다"},
+{"en":"promising","ko":"유망한"},
+{"en":"elaborate","ko":"구체화하다"},
+{"en":"collective intelligence","ko":"집단 지성"},
+{"en":"expert","ko":"전문가"},
+{"en":"newcomer","ko":"신참자, 새로운 사람"},
+{"en":"expert in","ko":"~에 능숙한(전문적인)"},
+{"en":"remarkably","ko":"놀랍게"},
+{"en":"accurate in","ko":"~에 있어 정확한"},
+{"en":"judge","ko":"판단하다"},
+{"en":"insensitive","ko":"무감각한"},
+{"en":"curse","ko":"저주"},
+{"en":"acquire","ko":"습득하다"},
+{"en":"underestimate","ko":"과소평가하다"},
+{"en":"participant","ko":"참가자"},
+{"en":"session","ko":"기간, 시간"},
+{"en":"assumption","ko":"추정, 가정"},
+{"en":"statistics","ko":"통계학, 통계"},
+{"en":"situation","ko":"상황"},
+{"en":"prediction","ko":"예측"},
+{"en":"experiment","ko":"실험"},
+{"en":"conduct","ko":"수행하다, 실시하다"},
+{"en":"be expected to V","ko":"~할 것으로 예상되다(기대되다)"},
+{"en":"roulette","ko":"룰렛(도박의 일종)"},
+{"en":"beginner's luck","ko":"초심자에게 따르는 행운"},
+{"en":"bet","ko":"베팅하다(돈을 걸다), 내기"},
+{"en":"relative","ko":"상대적인"},
+{"en":"frequency","ko":"빈도"},
+{"en":"approach","ko":"~에 가까워지다"},
+{"en":"fade away","ko":"사라지다"},
+{"en":"symbolic","ko":"상징적인"},
+{"en":"interpret","ko":"해석하다, 이해하다"},
+{"en":"insurer","ko":"보험 회사"},
+{"en":"promise","ko":"가망이 있다, 유망하다"},
+{"en":"depending on","ko":"~에 따라"},
+{"en":"figure out","ko":"~을 파악하다, ~을 알아내다"},
+{"en":"insurance","ko":"보험"},
+{"en":"rely on","ko":"~에 의존하다"},
+{"en":"individual","ko":"개별적인"},
+{"en":"loss","ko":"손실, 감소"},
+{"en":"sensory nerve","ko":"감각 신경"},
+{"en":"specialized","ko":"특화된, 전문화된"},
+{"en":"tissue","ko":"조직"},
+{"en":"particular","ko":"특정한"},
+{"en":"sensation","ko":"감각, 느낌"},
+{"en":"nerve ending","ko":"신경 말단"},
+{"en":"transmit","ko":"전달하다"},
+{"en":"unpleasant","ko":"불쾌한"},
+{"en":"in fact","ko":"사실상, 실제로"},
+{"en":"protective","ko":"보호하는, 방어적인"},
+{"en":"mechanism","ko":"메커니즘, 구조"},
+{"en":"get used to","ko":"~에 익숙해지다"},
+{"en":"capacity","ko":"능력"},
+{"en":"avoid","ko":"피하다"},
+{"en":"decrease","ko":"줄어들다"},
+{"en":"control","ko":"통제하다"},
+{"en":"motor nerve","ko":"운동 신경"},
+{"en":"lift","ko":"들어 올리다"},
+{"en":"function","ko":"기능"},
+{"en":"beating","ko":"(심장의) 박동, 고동"},
+{"en":"sweating","ko":"발한"},
+{"en":"exotic","ko":"외래(종)의"},
+{"en":"under pressure","ko":"압박(압력)을 받는"},
+{"en":"ecosystem","ko":"생태계"},
+{"en":"come close to","ko":"거의 ~에 이르다"},
+{"en":"adapt","ko":"조절하다, 적응하다"},
+{"en":"for instance","ko":"예를 들어"},
+{"en":"digest","ko":"소화하다"},
+{"en":"mature","ko":"익은"},
+{"en":"destroy","ko":"파괴하다"},
+{"en":"densely","ko":"밀집하여"},
+{"en":"habitat","ko":"서식지"},
+{"en":"extinction","ko":"멸종"},
+{"en":"available","ko":"구할 수 있는"},
+{"en":"near","ko":"~에 가까이 가다, ~에 접근하다"},
+{"en":"empire","ko":"제국"},
+{"en":"deliver","ko":"전달하다"},
+{"en":"hut","ko":"오두막"},
+{"en":"repeat","ko":"반복하다"},
+{"en":"relay","ko":"받아서 전달하다"},
+{"en":"condition","ko":"사정, 상황"},
+{"en":"catch sight of","ko":"~을 발견하다"},
+{"en":"station","ko":"배치하다"},
+{"en":"royal","ko":"왕의, 왕실의"},
+{"en":"apart","ko":"떨어진"},
+{"en":"direction","ko":"방향"},
+{"en":"hurry out","ko":"서둘러 나오다"},
+{"en":"by comparison","ko":"이에 비해"},
+{"en":"migrate","ko":"이동하다"},
+{"en":"efficient","ko":"효율적인"},
+{"en":"rely on","ko":"~에 의존하다"},
+{"en":"entirely","ko":"전적으로, 완전히"},
+{"en":"instruction","ko":"지침, 지시"},
+{"en":"breeding ground","ko":"번식지"},
+{"en":"facilitate","ko":"촉진하다"},
+{"en":"gene","ko":"유전자"},
+{"en":"flexibility","ko":"유연성"},
+{"en":"map","ko":"지도; (~을) 구획하다"},
+{"en":"explanation","ko":"설명"},
+{"en":"taste","ko":"맛을 느끼다; 맛"},
+{"en":"separate","ko":"개별적인, 별개의"},
+{"en":"register","ko":"등록하다"},
+{"en":"tip","ko":"끝"},
+{"en":"sourness","ko":"신맛"},
+{"en":"bitterness","ko":"쓴맛"},
+{"en":"as it turns out","ko":"밝혀진 바와 같이"},
+{"en":"misinterpretation","ko":"오해"},
+{"en":"mistranslation","ko":"오역"},
+{"en":"conduct","ko":"수행하다"},
+{"en":"leading","ko":"선도적인"},
+{"en":"specialty","ko":"특화된 분야"},
+{"en":"perceive","ko":"지각하다"},
+{"en":"intensity","ko":"강도"},
+{"en":"evolution","ko":"진화"},
+{"en":"draw","ko":"이끌어 내다, (결론 등을) 얻다"},
+{"en":"noticeable","ko":"눈에 띄는"},
+{"en":"connection","ko":"접점, 관련성"},
+{"en":"gene","ko":"유전자"},
+{"en":"concept","ko":"개념"},
+{"en":"theoretical","ko":"이론의, 이론적인"},
+{"en":"apply","ko":"적용하다"},
+{"en":"transmission","ko":"전파"},
+{"en":"innovation","ko":"혁신"},
+{"en":"selection","ko":"선택"},
+{"en":"conceptually","ko":"개념적으로"},
+{"en":"genetic","ko":"유전적인"},
+{"en":"modify","ko":"수정하다"},
+{"en":"account","ko":"설명하다"},
+{"en":"strictly","ko":"엄격하게"},
+{"en":"biological","ko":"생물학적인"},
+{"en":"trait","ko":"특성"},
+{"en":"be likely to V","ko":"~할 것 같다"},
+{"en":"equally","ko":"동일하게"},
+{"en":"acquire","ko":"획득하다"},
+{"en":"peer","ko":"또래"},
+{"en":"probability","ko":"확률"},
+{"en":"based on","ko":"~에 근거하여"},
+{"en":"in general","ko":"일반적으로"},
+{"en":"investigate","ko":"조사하다, 연구하다"},
+{"en":"surgeon","ko":"외과 의사"},
+{"en":"scrubs","ko":"(외과 의사의) 수술복"},
+{"en":"notable","ko":"눈에 띄는"},
+{"en":"article","ko":"기사"},
+{"en":"explore","ko":"탐구하다"},
+{"en":"observer","ko":"관찰자"},
+{"en":"norm","ko":"규범"},
+{"en":"status","ko":"지위"},
+{"en":"competence","ko":"능력"},
+{"en":"bow tie","ko":"나비넥타이"},
+{"en":"uniqueness","ko":"독특함"},
+{"en":"sneakers","ko":"운동화"},
+{"en":"lecture","ko":"강의"},
+{"en":"deviation","ko":"일탈"},
+{"en":"initial","ko":"초기의"},
+{"en":"persist","ko":"지속하다"},
+{"en":"constant","ko":"지속적인"},
+{"en":"gravity","ko":"중력"},
+{"en":"downward","ko":"아래로"},
+{"en":"resistance","ko":"저항"},
+{"en":"curved","ko":"곡선의, 굽은"},
+{"en":"represent","ko":"나타내다"},
+{"en":"combination","ko":"결합, 조합"},
+{"en":"elementary","ko":"기본적인"},
+{"en":"isolated","ko":"고립된"},
+{"en":"namely","ko":"즉, 소위"},
+{"en":"mutual","ko":"상호의, 상호 간의"},
+{"en":"relationship","ko":"관계"},
+{"en":"arrangement","ko":"배치"},
+{"en":"confine","ko":"국한하다, 제한하다"},
+{"en":"attention","ko":"관심"},
+{"en":"separately","ko":"개별적으로"},
+{"en":"significance","ko":"중요성"},
+{"en":"tendency","ko":"경향"},
+{"en":"definitely","ko":"명백하게"},
+{"en":"stimulus","ko":"자극"},
+{"en":"stimuli","ko":"자극들"},
+{"en":"competitive","ko":"경쟁적인"},
+{"en":"opposite","ko":"반대의"},
+{"en":"trait","ko":"특성"},
+{"en":"emission","ko":"배출"},
+{"en":"transportation","ko":"운송"},
+{"en":"sector","ko":"부문"},
+{"en":"wasteful","ko":"낭비되는"},
+{"en":"depending on","ko":"~에 따라"},
+{"en":"ship","ko":"수송하다, 선적하다"},
+{"en":"carbon footprint","ko":"탄소 발자국"},
+{"en":"fossil fuel","ko":"화석 연료"},
+{"en":"pastureland","ko":"목초지"},
+{"en":"matter","ko":"중요하다"},
+{"en":"versus","ko":"~ 대"},
+{"en":"bulk","ko":"대량의"},
+{"en":"load","ko":"적재량, 적재 화물"},
+{"en":"deliver","ko":"배달하다"},
+{"en":"creator","ko":"만들어 낸 사람, 창조자"},
+{"en":"clothing","ko":"옷"},
+{"en":"perfect","ko":"완성하다"},
+{"en":"nail","ko":"못"},
+{"en":"drive","ko":"(못·말뚝 등을) 박다"},
+{"en":"cloth","ko":"천, 직물"},
+{"en":"physical","ko":"물리적인"},
+{"en":"reality","ko":"실체"},
+{"en":"picture","ko":"그리다"},
+{"en":"product","ko":"제품"},
+{"en":"design","ko":"설계하다"},
+{"en":"process","ko":"과정"},
+{"en":"period","ko":"기간"},
+{"en":"vision","ko":"비전"},
+{"en":"decision","ko":"결정"},
+{"en":"activity","ko":"활동"},
+{"en":"in harmony","ko":"조화롭게, 한마음이 되어"},
+{"en":"bring ~ into existence","ko":"~을 생겨나게 하다"},
+{"en":"ecosystem","ko":"생태계"},
+{"en":"host","ko":"수용하다"},
+{"en":"adapt to","ko":"~에 적응하다"},
+{"en":"evolution","ko":"진화"},
+{"en":"microbe","ko":"미생물"},
+{"en":"evolve","ko":"진화시키다"},
+{"en":"chemical","ko":"화학적인"},
+{"en":"attack","ko":"공격"},
+{"en":"resistance","ko":"내성, 저항(력)"},
+{"en":"antibacterial","ko":"항균제"},
+{"en":"insecticide","ko":"살충제"},
+{"en":"poison","ko":"독, 독약"},
+{"en":"cockroach","ko":"바퀴벌레"},
+{"en":"distaste","ko":"혐오감, (음식에 대해) 싫어하기"},
+{"en":"trap","ko":"덫"},
+{"en":"counterpart","ko":"대응물, 상대방"},
+{"en":"ecologist","ko":"생태학자"},
+{"en":"urban","ko":"도시의"},
+{"en":"indoorsy","ko":"실내를 선호하는"},
+{"en":"humanity","ko":"인류"},
+{"en":"extinct","ko":"멸종한"},
+{"en":"thrive","ko":"번성하다"},
+{"en":"boundary","ko":"경계, 영역"},
+{"en":"flock","ko":"(무리 지어) 모이다"},
+{"en":"logistics","ko":"물류"},
+{"en":"phenomenal","ko":"대단한, 경이적인"},
+{"en":"function","ko":"기능하다"},
+{"en":"affordable","ko":"가격이 적당한"},
+{"en":"rank","ko":"순위를 매기다, 정렬시키다"},
+{"en":"standard","ko":"기준"},
+{"en":"fee","ko":"요금"},
+{"en":"literally","ko":"말 그대로"},
+{"en":"scholar","ko":"학자"},
+{"en":"entry","ko":"항목, 수록"},
+{"en":"entrance","ko":"입시, 입학"},
+{"en":"document","ko":"기록(물), 문서"},
+{"en":"caterer","ko":"음식 공급자"},
+{"en":"automation","ko":"자동화"},
+{"en":"rapidly","ko":"급격하게, 빠르게"},
+{"en":"maintain","ko":"유지하다"},
+{"en":"transportation","ko":"운송"},
+{"en":"indicate","ko":"나타내다, 암시하다"},
+{"en":"specialize","ko":"전문으로 하다"},
+{"en":"residence","ko":"거주"},
+{"en":"colonial","ko":"식민지의"},
+{"en":"bundle","ko":"묶음, 꾸러미"},
+{"en":"liberation","ko":"해방"},
+{"en":"upheaval","ko":"격변"},
+{"en":"urbanization","ko":"도시화"},
+{"en":"express","ko":"신속한, 속달의"},
+{"en":"scale","ko":"규모"},
+{"en":"rule of thumb","ko":"경험에 바탕을 둔 방법"},
+{"en":"prioritize","ko":"우선시하다"},
+{"en":"mutual","ko":"상호적인"}
+];
+
+/* =========================================================
+   동의어 / 반의어 사전 (고1 수준)
+   s = 동의어, a = 반의어 (없으면 빈 문자열)
+========================================================= */
+const SYNANT = {
+"no doubt":{s:"certainly (틀림없이)",a:""},
+"similarly":{s:"likewise (마찬가지로)",a:"differently (다르게)"},
+"two-way":{s:"mutual (상호의)",a:"one-way (일방적인)"},
+"process":{s:"procedure (절차)",a:""},
+"perceive":{s:"recognize (인식하다)",a:""},
+"publish":{s:"release (발표하다)",a:""},
+"scientific":{s:"empirical (과학적인)",a:"unscientific (비과학적인)"},
+"restate":{s:"rephrase (다시 말하다)",a:""},
+"as follows":{s:"as shown below (다음과 같이)",a:""},
+"experiment":{s:"test (실험)",a:""},
+"publication":{s:"release (출판물)",a:""},
+"previous":{s:"prior (이전의)",a:"following (다음의)"},
+"purchase":{s:"buy (구매하다)",a:"sell (팔다)"},
+"behavior":{s:"conduct (행동)",a:""},
+"likelihood":{s:"probability (가능성)",a:""},
+"determine":{s:"decide (결정하다)",a:""},
+"satisfied":{s:"content (만족한)",a:"dissatisfied (불만족한)"},
+"unpaid":{s:"voluntary (무급의)",a:"paid (유급의)"},
+"ambassador":{s:"envoy (대사)",a:""},
+"persuade":{s:"convince (설득하다)",a:"dissuade (단념시키다)"},
+"monitor":{s:"observe (감시하다)",a:""},
+"avoid":{s:"evade (피하다)",a:"face (직면하다)"},
+"negative":{s:"unfavorable (부정적인)",a:"positive (긍정적인)"},
+"word-of-mouth":{s:"grapevine (입소문)",a:""},
+"research":{s:"study (조사)",a:""},
+"detail":{s:"particular (세부 사항)",a:""},
+"organize":{s:"arrange (조직하다)",a:"disorganize (혼란스럽게 하다)"},
+"polite":{s:"courteous (정중한)",a:"rude (무례한)"},
+"permission":{s:"consent (허가)",a:"prohibition (금지)"},
+"particular":{s:"specific (특정한)",a:"general (일반적인)"},
+"location":{s:"site (장소)",a:""},
+"drive":{s:"push (몰아가다)",a:""},
+"matter":{s:"count (중요하다)",a:""},
+"reveal":{s:"disclose (드러내다)",a:"conceal (숨기다)"},
+"crucial":{s:"vital (중요한)",a:"trivial (사소한)"},
+"tension":{s:"stress (긴장)",a:"relaxation (긴장완화)"},
+"conflict":{s:"dispute (갈등)",a:"agreement (합의)"},
+"timetable":{s:"schedule (시간표)",a:""},
+"blueprint":{s:"plan (청사진)",a:""},
+"negotiate":{s:"bargain (협상하다)",a:""},
+"traditional":{s:"conventional (전통적인)",a:"modern (현대의)"},
+"approach":{s:"method (접근법)",a:""},
+"agreement":{s:"consent (합의)",a:"disagreement (불일치)"},
+"one-off":{s:"single (일회성의)",a:"recurring (반복되는)"},
+"transaction":{s:"deal (거래)",a:""},
+"repeatedly":{s:"again and again (반복적으로)",a:"once (한 번)"},
+"spouse":{s:"partner (배우자)",a:""},
+"colleague":{s:"coworker (동료)",a:""},
+"customer":{s:"client (고객)",a:""},
+"client":{s:"customer (의뢰인)",a:""},
+"in view of":{s:"considering (~을 고려하여)",a:""},
+"achieve":{s:"accomplish (얻다)",a:"fail (실패하다)"},
+"at the same time":{s:"simultaneously (동시에)",a:""},
+"interdependent":{s:"mutually dependent (상호 의존적인)",a:"independent (독립적인)"},
+"long-term":{s:"lasting (장기적인)",a:"short-term (단기적인)"},
+"win-win":{s:"mutually beneficial (양쪽에 유리한)",a:"lose-lose (양쪽에 불리한)"},
+"possess":{s:"own (갖고 있다)",a:"lack (부족하다)"},
+"a host of":{s:"a lot of (많은)",a:""},
+"desirable":{s:"attractive (바람직한)",a:"undesirable (바람직하지 않은)"},
+"be free of":{s:"be without (~이 없다)",a:"be full of (가득하다)"},
+"intelligent":{s:"smart (지적인)",a:"unintelligent (지능이 낮은)"},
+"characteristic":{s:"trait (특징)",a:""},
+"fair-minded":{s:"impartial (공정한)",a:"biased (편향된)"},
+"prejudiced":{s:"biased (편견을 가진)",a:"fair-minded (공정한)"},
+"behind the wheel":{s:"driving (운전하여)",a:""},
+"phenomenon":{s:"occurrence (현상)",a:""},
+"survey":{s:"poll (설문 조사)",a:""},
+"reliable":{s:"dependable (신뢰할 수 있는)",a:"unreliable (믿을 수 없는)"},
+"in terms of":{s:"regarding (~의 면에서)",a:""},
+"get along with":{s:"get on with (~과 잘 지내다)",a:"clash with (~와 충돌하다)"},
+"social":{s:"societal (사회의)",a:""},
+"economic":{s:"financial (경제의)",a:""},
+"situation":{s:"circumstance (상황)",a:""},
+"wage":{s:"salary (임금)",a:""},
+"condition":{s:"circumstance (여건)",a:""},
+"improve":{s:"enhance (개선되다)",a:"worsen (악화되다)"},
+"gradually":{s:"slowly (점차)",a:"suddenly (갑자기)"},
+"form":{s:"shape (형태)",a:""},
+"transport":{s:"transportation (운송)",a:""},
+"industrial":{s:"manufacturing (산업의)",a:""},
+"revolution":{s:"upheaval (혁명)",a:""},
+"railway":{s:"railroad (철도)",a:""},
+"seaside":{s:"coast (해안가)",a:"inland (내륙)"},
+"resort":{s:"retreat (휴양지)",a:""},
+"coast-to-coast":{s:"transcontinental (대륙 횡단의)",a:""},
+"arrival":{s:"advent (도래)",a:"departure (출발)"},
+"tourism":{s:"travel industry (관광 산업)",a:""},
+"growth":{s:"expansion (성장)",a:"decline (쇠퇴)"},
+"tire of":{s:"get tired of (~에 싫증나다)",a:""},
+"get sick of":{s:"tire of (~에 질리다)",a:""},
+"interest":{s:"curiosity (흥미)",a:"boredom (지루함)"},
+"bottom line":{s:"key point (요점)",a:""},
+"nerve cell":{s:"neuron (신경 세포)",a:""},
+"reduce":{s:"decrease (줄이다)",a:"increase (늘리다)"},
+"initial":{s:"first (초기의)",a:"final (최종의)"},
+"response":{s:"reaction (반응)",a:""},
+"stimulus":{s:"trigger (자극)",a:""},
+"stimuli":{s:"triggers (자극들)",a:""},
+"occur":{s:"happen (일어나다)",a:""},
+"neuron":{s:"nerve cell (뉴런)",a:""},
+"evolve":{s:"develop (진화하다)",a:""},
+"ancestor":{s:"forefather (조상)",a:"descendant (후손)"},
+"survival value":{s:"adaptive value (생존가)",a:""},
+"boredom":{s:"tedium (지루함)",a:"excitement (흥분)"},
+"environment":{s:"surroundings (환경)",a:""},
+"excitement":{s:"thrill (흥분)",a:"boredom (지루함)"},
+"turn down":{s:"lower (~을 낮추다)",a:"turn up (~을 높이다)"},
+"threat":{s:"danger (위협)",a:""},
+"stand out":{s:"be conspicuous (두드러지다)",a:"blend in (섞여 들다)"},
+"firefly":{s:"lightning bug (반딧불이)",a:""},
+"shape":{s:"form (형성하다)",a:""},
+"construction":{s:"structure (건축물)",a:"destruction (파괴)"},
+"carve":{s:"sculpt (조각하다)",a:""},
+"standing stone":{s:"megalith (입석)",a:""},
+"erect":{s:"build (세우다)",a:"demolish (허물다)"},
+"hunter-gatherer":{s:"forager (수렵 채집인)",a:""},
+"erection":{s:"construction (세우기)",a:""},
+"multiple":{s:"numerous (여러 개의)",a:"single (단 하나의)"},
+"successive":{s:"consecutive (연속적인)",a:""},
+"generation":{s:"age group (세대)",a:""},
+"innovator":{s:"pioneer (혁신가)",a:""},
+"settle down":{s:"establish oneself (정착하다)",a:""},
+"farming society":{s:"agricultural society (농경 사회)",a:""},
+"end up -ing":{s:"eventually (결국 ~하게 되다)",a:""},
+"radically":{s:"fundamentally (근본적으로)",a:"slightly (약간)"},
+"transform":{s:"convert (변형시키다)",a:""},
+"innovate":{s:"modernize (혁신하다)",a:""},
+"comment":{s:"remark (댓글)",a:""},
+"coach":{s:"train (코치하다)",a:""},
+"go for":{s:"apply to (~에 해당하다)",a:""},
+"professional":{s:"expert (전문가)",a:"amateur (아마추어)"},
+"degree":{s:"qualification (학위)",a:""},
+"executive":{s:"manager (임원)",a:""},
+"decade":{s:"ten years (10년)",a:""},
+"face":{s:"confront (직면하다)",a:"avoid (피하다)"},
+"criticism":{s:"disapproval (비난)",a:"praise (칭찬)"},
+"community":{s:"society (지역 사회)",a:""},
+"run":{s:"operate (운영하다)",a:""},
+"surgery":{s:"operation (수술)",a:""},
+"accountant":{s:"auditor (회계사)",a:""},
+"feedback":{s:"response (피드백)",a:""},
+"tough":{s:"strict (엄격한)",a:"lenient (관대한)"},
+"guideline":{s:"rule (지침)",a:""},
+"brain death":{s:"cerebral death (뇌사)",a:""},
+"transplantation":{s:"transplant (장기 이식)",a:""},
+"transfer":{s:"convey (전달하다)",a:""},
+"organ":{s:"body part (장기)",a:""},
+"under consideration":{s:"being reviewed (고려 중인)",a:""},
+"legal":{s:"lawful (법적인)",a:"illegal (불법의)"},
+"requirement":{s:"necessity (요건)",a:""},
+"specify":{s:"state clearly (명시하다)",a:""},
+"potential":{s:"possible (잠재적인)",a:""},
+"regulation":{s:"rule (규정)",a:""},
+"diagnose":{s:"identify (진단하다)",a:""},
+"questionable":{s:"doubtful (의문인)",a:"certain (확실한)"},
+"suspicion":{s:"doubt (의심)",a:"trust (신뢰)"},
+"maintain":{s:"sustain (유지하다)",a:""},
+"mistaken":{s:"wrong (잘못된)",a:"correct (옳은)"},
+"unreliable":{s:"undependable (믿을 수 없는)",a:"reliable (신뢰할 수 있는)"},
+"precision":{s:"accuracy (정확성)",a:"imprecision (부정확)"},
+"consistency":{s:"uniformity (일관성)",a:"inconsistency (불일치)"},
+"criterion":{s:"standard (판단의 기준)",a:""},
+"criteria":{s:"standards (기준들)",a:""},
+"immediate":{s:"instant (즉각적인)",a:"delayed (지연된)"},
+"burial":{s:"interment (매장)",a:""},
+"advertiser":{s:"sponsor (광고주)",a:""},
+"display":{s:"exhibit (전시하다)",a:"hide (숨기다)"},
+"considerable":{s:"substantial (상당한)",a:"negligible (사소한)"},
+"facility":{s:"skill (재능)",a:""},
+"adapt":{s:"adjust (적응시키다)",a:""},
+"come up with":{s:"devise (~을 고안하다)",a:""},
+"market status":{s:"market position (시장 지위)",a:""},
+"promote":{s:"advertise (홍보하다)",a:""},
+"yeast":{s:"leaven (효모)",a:""},
+"ingredient":{s:"component (재료)",a:""},
+"homemade":{s:"handmade (집에서 만든)",a:"store-bought (사서 만든)"},
+"consumer":{s:"buyer (소비자)",a:"producer (생산자)"},
+"demand":{s:"request (수요)",a:"supply (공급)"},
+"hire":{s:"employ (고용하다)",a:"fire (해고하다)"},
+"strategy":{s:"plan (전략)",a:""},
+"claim":{s:"assert (주장하다)",a:"deny (부인하다)"},
+"boost":{s:"increase (끌어올리다)",a:"reduce (줄이다)"},
+"turn a into b":{s:"convert A into B (A를 B로 바꾸다)",a:""},
+"shortly thereafter":{s:"soon after (그 직후)",a:""},
+"transform a into b":{s:"turn A into B (변형하다)",a:""},
+"reposition":{s:"rebrand (이미지의 전환을 꾀하다)",a:""},
+"philosophical":{s:"reflective (철학적인)",a:""},
+"shift":{s:"change (변화)",a:""},
+"competitive":{s:"rival (경쟁적인)",a:"cooperative (협력적인)"},
+"geographically":{s:"spatially (지리적으로)",a:""},
+"spread out":{s:"disperse (~을 퍼뜨리다)",a:"gather (모으다)"},
+"quality":{s:"fine (양질의)",a:"poor (질이 낮은)"},
+"premature":{s:"untimely (너무 이른)",a:"timely (시기적절한)"},
+"reasonable":{s:"sensible (합리적인)",a:"unreasonable (불합리한)"},
+"equally":{s:"evenly (마찬가지로)",a:"unequally (불균등하게)"},
+"essential":{s:"vital (매우 중요한)",a:"unnecessary (불필요한)"},
+"modernization":{s:"modernizing (현대화)",a:""},
+"meet":{s:"satisfy (충족시키다)",a:""},
+"diverse":{s:"varied (다양한)",a:"uniform (획일적인)"},
+"complex":{s:"complicated (복잡한)",a:"simple (단순한)"},
+"evidence":{s:"proof (증거)",a:""},
+"demonstrate":{s:"show (보여주다)",a:""},
+"attention":{s:"focus (주의)",a:""},
+"reward":{s:"compensate (보상하다)",a:"punish (처벌하다)"},
+"notice":{s:"observe (알아채다)",a:"ignore (무시하다)"},
+"auditory":{s:"acoustic (청각의)",a:"visual (시각의)"},
+"direct one's attention":{s:"focus attention (주의를 기울이다)",a:""},
+"expansion":{s:"growth (확장)",a:"contraction (수축)"},
+"represent":{s:"symbolize (나타내다)",a:""},
+"string":{s:"cord (현)",a:""},
+"precisely":{s:"exactly (정확하게)",a:"roughly (대략)"},
+"vital":{s:"essential (필수적인)",a:"unnecessary (불필요한)"},
+"spatial":{s:"spacial (공간의)",a:""},
+"physical":{s:"bodily (물리적인)",a:"mental (정신적인)"},
+"architecture":{s:"structure (구조)",a:""},
+"eyesight":{s:"vision (시력)",a:""},
+"species":{s:"kind (종)",a:""},
+"climatic":{s:"weather-related (기후의)",a:""},
+"endure":{s:"withstand (견디다)",a:""},
+"satisfy":{s:"fulfill (충족시키다)",a:"dissatisfy (불만족시키다)"},
+"force":{s:"compel (강요하다)",a:""},
+"creature":{s:"being (생명체)",a:""},
+"immobile":{s:"motionless (움직이지 않는)",a:"mobile (움직이는)"},
+"be capable of":{s:"be able to (~할 수 있다)",a:"be incapable of (~할 수 없다)"},
+"seed":{s:"grain (씨앗)",a:""},
+"larva":{s:"grub (유충)",a:""},
+"occupy":{s:"inhabit (점유하다)",a:"vacate (비우다)"},
+"ease":{s:"relieve (완화하다)",a:"worsen (악화시키다)"},
+"obtain":{s:"acquire (얻다)",a:"lose (잃다)"},
+"survive":{s:"endure (생존하다)",a:"die (죽다)"},
+"reproduce":{s:"breed (번식하다)",a:""},
+"instead of":{s:"rather than (~대신에)",a:""},
+"solo":{s:"individual (혼자서 하는)",a:"group (단체의)"},
+"generate":{s:"produce (생성하다)",a:""},
+"separately":{s:"individually (개별적으로)",a:"together (함께)"},
+"pool":{s:"combine (모으다)",a:""},
+"preserve":{s:"maintain (보존하다)",a:"destroy (파괴하다)"},
+"independent":{s:"self-reliant (독립적인)",a:"dependent (의존적인)"},
+"evaluate":{s:"assess (평가하다)",a:""},
+"refine":{s:"improve (다듬다)",a:""},
+"promising":{s:"hopeful (유망한)",a:"unpromising (가망 없는)"},
+"elaborate":{s:"develop (구체화하다)",a:"simplify (단순화하다)"},
+"collective intelligence":{s:"group intelligence (집단 지성)",a:""},
+"expert":{s:"specialist (전문가)",a:"novice (초보자)"},
+"newcomer":{s:"beginner (신참자)",a:"veteran (베테랑)"},
+"expert in":{s:"skilled in (~에 능숙한)",a:""},
+"remarkably":{s:"strikingly (놀랍게)",a:""},
+"accurate in":{s:"precise in (~에 있어 정확한)",a:""},
+"judge":{s:"assess (판단하다)",a:""},
+"insensitive":{s:"unfeeling (무감각한)",a:"sensitive (민감한)"},
+"curse":{s:"spell (저주)",a:"blessing (축복)"},
+"acquire":{s:"obtain (습득하다)",a:"lose (잃다)"},
+"underestimate":{s:"undervalue (과소평가하다)",a:"overestimate (과대평가하다)"},
+"participant":{s:"attendee (참가자)",a:""},
+"session":{s:"period (기간)",a:""},
+"assumption":{s:"presumption (추정)",a:"fact (사실)"},
+"statistics":{s:"data (통계)",a:""},
+"prediction":{s:"forecast (예측)",a:""},
+"conduct":{s:"carry out (수행하다)",a:""},
+"be expected to v":{s:"be likely to V (~할 것으로 예상되다)",a:""},
+"roulette":{s:"wheel game (룰렛)",a:""},
+"beginner's luck":{s:"initial success (초심자의 행운)",a:""},
+"bet":{s:"wager (베팅하다)",a:""},
+"relative":{s:"comparative (상대적인)",a:"absolute (절대적인)"},
+"frequency":{s:"rate (빈도)",a:""},
+"fade away":{s:"disappear (사라지다)",a:"appear (나타나다)"},
+"symbolic":{s:"representative (상징적인)",a:""},
+"interpret":{s:"understand (해석하다)",a:"misinterpret (오해하다)"},
+"insurer":{s:"underwriter (보험 회사)",a:""},
+"promise":{s:"show potential (가망이 있다)",a:""},
+"depending on":{s:"according to (~에 따라)",a:""},
+"figure out":{s:"work out (~을 알아내다)",a:""},
+"insurance":{s:"coverage (보험)",a:""},
+"rely on":{s:"depend on (~에 의존하다)",a:""},
+"individual":{s:"single (개별적인)",a:"collective (집단의)"},
+"loss":{s:"decrease (손실)",a:"gain (이득)"},
+"sensory nerve":{s:"sensory neuron (감각 신경)",a:"motor nerve (운동 신경)"},
+"specialized":{s:"specific (특화된)",a:"general (일반적인)"},
+"tissue":{s:"cell tissue (조직)",a:""},
+"sensation":{s:"feeling (감각)",a:""},
+"nerve ending":{s:"receptor (신경 말단)",a:""},
+"transmit":{s:"send (전달하다)",a:"receive (받다)"},
+"unpleasant":{s:"disagreeable (불쾌한)",a:"pleasant (유쾌한)"},
+"in fact":{s:"actually (사실상)",a:""},
+"protective":{s:"defensive (보호하는)",a:"harmful (해로운)"},
+"mechanism":{s:"system (메커니즘)",a:""},
+"get used to":{s:"become accustomed to (~에 익숙해지다)",a:""},
+"capacity":{s:"ability (능력)",a:""},
+"decrease":{s:"diminish (줄어들다)",a:"increase (늘어나다)"},
+"control":{s:"regulate (통제하다)",a:""},
+"motor nerve":{s:"motor neuron (운동 신경)",a:"sensory nerve (감각 신경)"},
+"lift":{s:"raise (들어 올리다)",a:"lower (내리다)"},
+"function":{s:"purpose (기능)",a:""},
+"beating":{s:"pulse (박동)",a:""},
+"sweating":{s:"perspiration (발한)",a:""},
+"exotic":{s:"foreign (외래(종)의)",a:"native (토종의)"},
+"under pressure":{s:"stressed (압박을 받는)",a:"relaxed (편안한)"},
+"ecosystem":{s:"biosystem (생태계)",a:""},
+"come close to":{s:"approach (거의 ~에 이르다)",a:""},
+"for instance":{s:"for example (예를 들어)",a:""},
+"digest":{s:"break down (소화하다)",a:""},
+"mature":{s:"ripe (익은)",a:"unripe (덜 익은)"},
+"destroy":{s:"demolish (파괴하다)",a:"build (건설하다)"},
+"densely":{s:"closely (밀집하여)",a:"sparsely (드문드문)"},
+"habitat":{s:"environment (서식지)",a:""},
+"extinction":{s:"dying out (멸종)",a:"survival (생존)"},
+"available":{s:"obtainable (구할 수 있는)",a:"unavailable (구할 수 없는)"},
+"near":{s:"approach (~에 접근하다)",a:""},
+"empire":{s:"kingdom (제국)",a:""},
+"deliver":{s:"convey (전달하다)",a:""},
+"hut":{s:"cabin (오두막)",a:""},
+"repeat":{s:"reiterate (반복하다)",a:""},
+"relay":{s:"pass on (받아서 전달하다)",a:""},
+"catch sight of":{s:"spot (~을 발견하다)",a:""},
+"station":{s:"post (배치하다)",a:""},
+"royal":{s:"regal (왕의)",a:""},
+"apart":{s:"separated (떨어진)",a:"together (함께)"},
+"direction":{s:"way (방향)",a:""},
+"hurry out":{s:"rush out (서둘러 나오다)",a:""},
+"by comparison":{s:"in contrast (이에 비해)",a:""},
+"migrate":{s:"move (이동하다)",a:"settle (정착하다)"},
+"efficient":{s:"effective (효율적인)",a:"inefficient (비효율적인)"},
+"entirely":{s:"completely (전적으로)",a:"partially (부분적으로)"},
+"instruction":{s:"direction (지침)",a:""},
+"breeding ground":{s:"spawning ground (번식지)",a:""},
+"facilitate":{s:"ease (촉진하다)",a:"hinder (방해하다)"},
+"gene":{s:"genetic material (유전자)",a:""},
+"flexibility":{s:"adaptability (유연성)",a:"rigidity (경직성)"},
+"map":{s:"chart (지도)",a:""},
+"explanation":{s:"account (설명)",a:""},
+"taste":{s:"flavor (맛)",a:""},
+"separate":{s:"distinct (개별적인)",a:"combined (결합된)"},
+"register":{s:"record (등록하다)",a:""},
+"tip":{s:"end (끝)",a:""},
+"sourness":{s:"acidity (신맛)",a:"sweetness (단맛)"},
+"bitterness":{s:"acridity (쓴맛)",a:"sweetness (단맛)"},
+"as it turns out":{s:"apparently (밝혀진 바와 같이)",a:""},
+"misinterpretation":{s:"misunderstanding (오해)",a:""},
+"mistranslation":{s:"translation error (오역)",a:""},
+"leading":{s:"foremost (선도적인)",a:""},
+"specialty":{s:"specialization (특화된 분야)",a:""},
+"intensity":{s:"strength (강도)",a:""},
+"evolution":{s:"development (진화)",a:""},
+"draw":{s:"derive (이끌어 내다)",a:""},
+"noticeable":{s:"obvious (눈에 띄는)",a:"unnoticeable (눈에 띄지 않는)"},
+"connection":{s:"link (관련성)",a:""},
+"concept":{s:"idea (개념)",a:""},
+"theoretical":{s:"hypothetical (이론적인)",a:"practical (실제적인)"},
+"apply":{s:"use (적용하다)",a:""},
+"transmission":{s:"spread (전파)",a:""},
+"innovation":{s:"invention (혁신)",a:""},
+"selection":{s:"choice (선택)",a:""},
+"conceptually":{s:"theoretically (개념적으로)",a:""},
+"genetic":{s:"hereditary (유전적인)",a:""},
+"modify":{s:"alter (수정하다)",a:""},
+"account":{s:"explain (설명하다)",a:""},
+"strictly":{s:"rigorously (엄격하게)",a:"loosely (느슨하게)"},
+"biological":{s:"organic (생물학적인)",a:""},
+"trait":{s:"characteristic (특성)",a:""},
+"be likely to v":{s:"be expected to V (~할 것 같다)",a:"be unlikely to V (~할 것 같지 않다)"},
+"peer":{s:"equal (또래)",a:""},
+"probability":{s:"likelihood (확률)",a:""},
+"based on":{s:"founded on (~에 근거하여)",a:""},
+"in general":{s:"generally (일반적으로)",a:"specifically (구체적으로)"},
+"investigate":{s:"examine (조사하다)",a:""},
+"surgeon":{s:"operator (외과 의사)",a:""},
+"scrubs":{s:"surgical gown (수술복)",a:""},
+"notable":{s:"noteworthy (눈에 띄는)",a:"insignificant (하찮은)"},
+"article":{s:"piece (기사)",a:""},
+"explore":{s:"investigate (탐구하다)",a:""},
+"observer":{s:"watcher (관찰자)",a:""},
+"norm":{s:"standard (규범)",a:""},
+"status":{s:"rank (지위)",a:""},
+"competence":{s:"capability (능력)",a:"incompetence (무능력)"},
+"bow tie":{s:"necktie (나비넥타이)",a:""},
+"uniqueness":{s:"distinctiveness (독특함)",a:"commonness (평범함)"},
+"sneakers":{s:"trainers (운동화)",a:""},
+"lecture":{s:"talk (강의)",a:""},
+"deviation":{s:"departure (일탈)",a:"conformity (순응)"},
+"persist":{s:"continue (지속하다)",a:"stop (멈추다)"},
+"constant":{s:"continuous (지속적인)",a:"occasional (가끔의)"},
+"gravity":{s:"gravitation (중력)",a:""},
+"downward":{s:"descending (아래로)",a:"upward (위로)"},
+"resistance":{s:"opposition (저항)",a:""},
+"curved":{s:"bent (곡선의)",a:"straight (곧은)"},
+"combination":{s:"mixture (결합)",a:"separation (분리)"},
+"elementary":{s:"basic (기본적인)",a:"advanced (고급의)"},
+"isolated":{s:"separated (고립된)",a:"connected (연결된)"},
+"namely":{s:"that is (즉)",a:""},
+"mutual":{s:"reciprocal (상호의)",a:"one-sided (일방적인)"},
+"relationship":{s:"connection (관계)",a:""},
+"arrangement":{s:"layout (배치)",a:""},
+"confine":{s:"restrict (국한하다)",a:"expand (확장하다)"},
+"significance":{s:"importance (중요성)",a:"insignificance (하찮음)"},
+"tendency":{s:"inclination (경향)",a:""},
+"definitely":{s:"clearly (명백하게)",a:""},
+"opposite":{s:"contrary (반대의)",a:"same (같은)"},
+"emission":{s:"discharge (배출)",a:""},
+"transportation":{s:"transport (운송)",a:""},
+"sector":{s:"field (부문)",a:""},
+"wasteful":{s:"extravagant (낭비되는)",a:"economical (절약하는)"},
+"ship":{s:"transport (수송하다)",a:""},
+"carbon footprint":{s:"carbon emissions (탄소 발자국)",a:""},
+"fossil fuel":{s:"nonrenewable energy (화석 연료)",a:"renewable energy (재생 에너지)"},
+"pastureland":{s:"grassland (목초지)",a:""},
+"versus":{s:"against (~대)",a:""},
+"bulk":{s:"mass (대량의)",a:""},
+"load":{s:"cargo (적재 화물)",a:""},
+"creator":{s:"maker (만들어 낸 사람)",a:""},
+"clothing":{s:"clothes (옷)",a:""},
+"perfect":{s:"complete (완성하다)",a:""},
+"nail":{s:"spike (못)",a:""},
+"cloth":{s:"fabric (천)",a:""},
+"reality":{s:"actuality (실체)",a:"illusion (환상)"},
+"picture":{s:"depict (그리다)",a:""},
+"product":{s:"item (제품)",a:""},
+"design":{s:"plan (설계하다)",a:""},
+"period":{s:"duration (기간)",a:""},
+"vision":{s:"foresight (비전)",a:""},
+"decision":{s:"choice (결정)",a:""},
+"activity":{s:"action (활동)",a:"inactivity (비활동)"},
+"in harmony":{s:"in accord (조화롭게)",a:"in conflict (불화하여)"},
+"bring ~ into existence":{s:"create (~을 생겨나게 하다)",a:""},
+"host":{s:"accommodate (수용하다)",a:""},
+"adapt to":{s:"adjust to (~에 적응하다)",a:""},
+"microbe":{s:"microorganism (미생물)",a:""},
+"chemical":{s:"substance (화학적인)",a:""},
+"attack":{s:"assault (공격)",a:"defense (방어)"},
+"antibacterial":{s:"antimicrobial (항균제)",a:""},
+"insecticide":{s:"pesticide (살충제)",a:""},
+"poison":{s:"toxin (독)",a:"antidote (해독제)"},
+"cockroach":{s:"roach (바퀴벌레)",a:""},
+"distaste":{s:"dislike (혐오감)",a:"liking (좋아함)"},
+"trap":{s:"snare (덫)",a:""},
+"counterpart":{s:"equivalent (대응물)",a:""},
+"ecologist":{s:"environmental scientist (생태학자)",a:""},
+"urban":{s:"metropolitan (도시의)",a:"rural (시골의)"},
+"indoorsy":{s:"homebody-like (실내를 선호하는)",a:"outdoorsy (야외를 좋아하는)"},
+"humanity":{s:"mankind (인류)",a:""},
+"extinct":{s:"vanished (멸종한)",a:"extant (현존하는)"},
+"thrive":{s:"flourish (번성하다)",a:"decline (쇠퇴하다)"},
+"boundary":{s:"border (경계)",a:""},
+"flock":{s:"gather (모이다)",a:"scatter (흩어지다)"},
+"logistics":{s:"supply chain (물류)",a:""},
+"phenomenal":{s:"extraordinary (대단한)",a:"ordinary (평범한)"},
+"affordable":{s:"inexpensive (가격이 적당한)",a:"expensive (비싼)"},
+"rank":{s:"order (순위를 매기다)",a:""},
+"standard":{s:"criterion (기준)",a:""},
+"fee":{s:"charge (요금)",a:""},
+"literally":{s:"exactly (말 그대로)",a:"figuratively (비유적으로)"},
+"scholar":{s:"academic (학자)",a:""},
+"entry":{s:"item (항목)",a:""},
+"entrance":{s:"admission (입시)",a:"exit (퇴장)"},
+"document":{s:"record (기록물)",a:""},
+"caterer":{s:"food supplier (음식 공급자)",a:""},
+"automation":{s:"mechanization (자동화)",a:""},
+"rapidly":{s:"quickly (급격하게)",a:"slowly (천천히)"},
+"indicate":{s:"show (나타내다)",a:""},
+"specialize":{s:"focus on (전문으로 하다)",a:""},
+"residence":{s:"dwelling (거주)",a:""},
+"colonial":{s:"colony-related (식민지의)",a:""},
+"bundle":{s:"package (묶음)",a:""},
+"liberation":{s:"freedom (해방)",a:"oppression (억압)"},
+"upheaval":{s:"turmoil (격변)",a:"stability (안정)"},
+"urbanization":{s:"city growth (도시화)",a:""},
+"express":{s:"rapid (신속한)",a:""},
+"scale":{s:"size (규모)",a:""},
+"rule of thumb":{s:"general guideline (경험에 바탕을 둔 방법)",a:""},
+"prioritize":{s:"rank (우선시하다)",a:""}
+};
+
+/* =========================================================
+   중복 단어 합치기 (뜻도 모으기) + 동의어/반의어 붙이기
+========================================================= */
+const words = (function(){
+  const map = new Map();
+  rawWords.forEach(w => {
+    const key = w.en.toLowerCase().trim();
+    if(map.has(key)){
+      const existing = map.get(key);
+      const meanings = new Set();
+      existing.ko.split(",").forEach(m => meanings.add(m.trim()));
+      w.ko.split(",").forEach(m => meanings.add(m.trim()));
+      existing.ko = [...meanings].join(", ");
+    } else {
+      map.set(key, {en: w.en, ko: w.ko});
+    }
+  });
+  const list = [...map.values()];
+  list.forEach(w => {
+    const info = SYNANT[w.en.toLowerCase().trim()] || {s:"",a:""};
+    w.syn = info.s || "";
+    w.ant = info.a || "";
+  });
+  return list;
+})();
+
+/* =========================================================
+   상태 관리
+========================================================= */
+const SAVE_KEY = "english_vocab_progress_v4";
+
+let idx = 0;
+let stage = 0; // 0: 힌트, 1: 뜻, 2: 동의어/반의어
+let wordStatus = {}; // { wordIndex: true(알았다) / false(몰랐다) }
+let reviewDeck = null; // null이면 전체, 배열이면 몰랐던 단어만
+let touchStartX = 0, touchStartY = 0, moved = false;
+
+function currentDeck(){ return reviewDeck ? reviewDeck : words.map((_,i)=>i); }
+function deckLength(){ return currentDeck().length; }
+function currentWordIndex(){ return currentDeck()[idx]; }
+
+const el = {
+  word: document.getElementById('word'),
+  meaning: document.getElementById('meaning'),
+  synant: document.getElementById('synant'),
+  card: document.getElementById('card'),
+  progress: document.getElementById('progress'),
+  fill: document.getElementById('fill'),
+  summary: document.getElementById('summary'),
+  stats: document.getElementById('stats'),
+  unknown: document.getElementById('unknown'),
+  reviewUnknown: document.getElementById('reviewUnknown'),
+  wordList: document.getElementById('wordList'),
+  wordItems: document.getElementById('wordItems'),
+  listSearch: document.getElementById('listSearch')
+};
+
+function synantHTML(w){
+  const synRow = `<div class="row"><span class="tag syn">동의어</span><span class="val ${w.syn?'':'none'}">${w.syn || '해당 없음'}</span></div>`;
+  const antRow = `<div class="row"><span class="tag ant">반의어</span><span class="val ${w.ant?'':'none'}">${w.ant || '해당 없음'}</span></div>`;
+  return synRow + antRow;
+}
+
+function render(){
+  const w = words[currentWordIndex()];
+  el.word.textContent = w.en;
+  el.meaning.textContent = w.ko;
+  el.synant.innerHTML = synantHTML(w);
+  stage = 0;
+  el.card.classList.remove('stage1','stage2');
+  el.card.style.transform = '';
+  el.card.style.opacity = '';
+  el.progress.textContent = `${idx+1} / ${deckLength()}`;
+  el.fill.style.width = `${((idx)/deckLength())*100}%`;
+  saveProgress();
+}
+
+function tapReveal(){
+  stage = (stage+1) % 3;
+  el.card.classList.toggle('stage1', stage>=1);
+  el.card.classList.toggle('stage2', stage>=2);
+}
+
+function goNext(known){
+  const wi = currentWordIndex();
+  wordStatus[wi] = known;
+  const cls = known ? 'swipe-left' : 'swipe-right';
+  el.card.classList.add(cls);
+  setTimeout(() => {
+    el.card.classList.remove(cls);
+    idx++;
+    if(idx >= deckLength()){
+      showSummary();
+    } else {
+      render();
+    }
+  }, 180);
+}
+
+function navigate(delta){
+  const next = idx + delta;
+  if(next < 0 || next >= deckLength()) return;
+  idx = next;
+  render();
+}
+
+document.getElementById('know').addEventListener('click', () => goNext(true));
+document.getElementById('dont').addEventListener('click', () => goNext(false));
+
+el.card.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  moved = false;
+});
+el.card.addEventListener('touchmove', e => {
+  const dx = e.touches[0].clientX - touchStartX;
+  const dy = e.touches[0].clientY - touchStartY;
+  if(Math.abs(dx) > 10 || Math.abs(dy) > 10) moved = true;
+  if(Math.abs(dx) > Math.abs(dy)){
+    el.card.style.transform = `translateX(${dx}px) rotate(${dx/20}deg)`;
+    el.card.style.opacity = String(1 - Math.min(Math.abs(dx)/300, 0.6));
+  }
+});
+el.card.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  el.card.style.transform = '';
+  el.card.style.opacity = '';
+  if(!moved){
+    tapReveal();
+    return;
+  }
+  if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 70){
+    goNext(dx < 0); // 왼쪽으로 밀면 알았다(true), 오른쪽으로 밀면 몰랐다(false)
+  } else if(Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 60){
+    navigate(dy < 0 ? 1 : -1); // 위로 밀면 다음, 아래로 밀면 이전
+  }
+});
+// 마우스(데스크톱)에서도 탭으로 뜻 보기
+el.card.addEventListener('click', e => {
+  if(moved) return;
+  // touchend에서 이미 처리된 경우(모바일) 중복 방지
+  if('ontouchstart' in window) return;
+  tapReveal();
+});
+
+/* =========================================================
+   요약 화면
+========================================================= */
+function showSummary(){
+  const deck = currentDeck();
+  let known = 0, unknownList = [];
+  deck.forEach(i => {
+    if(wordStatus[i]) known++;
+    else if(wordStatus[i] === false) unknownList.push(i);
+  });
+  el.stats.innerHTML = `총 ${deck.length}개 중<br><b>${known}개</b> 알았어요 · <b>${unknownList.length}개</b> 몰랐어요`;
+  el.unknown.innerHTML = unknownList.length
+    ? unknownList.map(i => `<div><b>${words[i].en}</b> - ${words[i].ko}</div>`).join('')
+    : '<div>몰랐던 단어가 없어요! 👏</div>';
+  el.reviewUnknown.style.display = unknownList.length ? 'inline-block' : 'none';
+  document.querySelector('.app').style.display = 'none';
+  el.summary.style.display = 'block';
+}
+
+function restart(){
+  idx = 0;
+  reviewDeck = null;
+  el.summary.style.display = 'none';
+  document.querySelector('.app').style.display = 'flex';
+  render();
+}
+
+function startReviewUnknown(){
+  const deck = currentDeck();
+  reviewDeck = deck.filter(i => wordStatus[i] === false);
+  idx = 0;
+  el.summary.style.display = 'none';
+  document.querySelector('.app').style.display = 'flex';
+  render();
+}
+
+function resetAll(){
+  if(!confirm('모든 학습 기록을 초기화할까요?')) return;
+  wordStatus = {};
+  localStorage.removeItem(SAVE_KEY);
+  restart();
+}
+
+/* =========================================================
+   단어 목록
+========================================================= */
+function renderWordList(filter){
+  const f = (filter || '').trim().toLowerCase();
+  const items = words.map((w,i) => ({w,i}))
+    .filter(({w}) => !f || w.en.toLowerCase().includes(f) || w.ko.toLowerCase().includes(f));
+  el.wordItems.innerHTML = items.map(({w,i}) => {
+    const st = wordStatus[i];
+    const stCls = st === true ? 'known' : (st === false ? 'unknown' : '');
+    const badge = st === true ? '<span class="wordBadge known">알았다</span>' : (st === false ? '<span class="wordBadge unknown">몰랐다</span>' : '');
+    return `<div class="wordItem ${stCls}" data-idx="${i}">
+      <div class="wordNumber">${i+1}</div>
+      <div>
+        <div class="wordEnglish">${w.en}</div>
+        <div class="wordKorean">${w.ko}</div>
+      </div>
+      ${badge}
+    </div>`;
+  }).join('');
+  [...el.wordItems.querySelectorAll('.wordItem')].forEach(item => {
+    item.addEventListener('click', () => {
+      const wi = Number(item.dataset.idx);
+      reviewDeck = null;
+      idx = wi;
+      closeList();
+      document.querySelector('.app').style.display = 'flex';
+      el.summary.style.display = 'none';
+      render();
+    });
+  });
+}
+
+function openList(){
+  renderWordList(el.listSearch.value);
+  el.wordList.classList.add('show');
+}
+function closeList(){
+  el.wordList.classList.remove('show');
+}
+
+document.getElementById('listBtn').addEventListener('click', openList);
+document.getElementById('closeListBtn').addEventListener('click', closeList);
+el.listSearch.addEventListener('input', () => renderWordList(el.listSearch.value));
+
+/* =========================================================
+   저장 / 불러오기
+========================================================= */
+function saveProgress(){
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify({idx, wordStatus, reviewDeck}));
+  }catch(e){}
+}
+function loadProgress(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    if(data && typeof data === 'object'){
+      wordStatus = data.wordStatus || {};
+      reviewDeck = data.reviewDeck || null;
+      idx = Math.min(data.idx || 0, deckLength()-1);
+      if(idx < 0) idx = 0;
+    }
+  }catch(e){}
+}
+
+/* =========================================================
+   초기화
+========================================================= */
+loadProgress();
+render();
+</script>
+</body>
+</html>
