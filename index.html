@@ -22,16 +22,16 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:20px 
 .hint2{display:none;margin-top:14px;color:#b7b7bf;font-size:12px}
 .card.stage1 .hint2{display:block}
 .meaning{margin-top:24px;font-size:clamp(19px,4.6vw,27px);font-weight:600;text-align:center;line-height:1.4;color:#333;display:none}
-.card.stage1 .meaning,.card.stage2 .meaning{display:block}
+.card.stage1 .meaning{display:block}
 .card.stage1 .hint,.card.stage2 .hint{display:none}
-.synant{display:none;margin-top:22px;padding-top:18px;border-top:1px solid #eee;width:100%;max-width:420px;font-size:14.5px;line-height:1.9;text-align:center}
+.synant{display:none;margin-top:6px;width:100%;max-width:460px;text-align:center}
 .card.stage2 .synant{display:block}
-.synant .row{margin:2px 0}
-.synant .tag{display:inline-block;min-width:70px;font-weight:800;font-size:12px;padding:3px 8px;border-radius:8px;margin-right:6px}
+.synant .row{margin:16px 0;display:flex;flex-direction:column;align-items:center;gap:8px}
+.synant .tag{display:inline-block;font-weight:800;font-size:15px;padding:5px 14px;border-radius:10px}
 .synant .tag.syn{background:#e6f7ec;color:#12894f}
 .synant .tag.ant{background:#fdeceb;color:#c0392b}
-.synant .val{color:#333;font-weight:600}
-.synant .none{color:#bbb;font-weight:400}
+.synant .val{color:#222;font-weight:700;font-size:clamp(20px,5vw,30px);line-height:1.35}
+.synant .none{color:#bbb;font-weight:400;font-size:clamp(16px,4vw,22px)}
 footer{padding:12px 18px calc(18px + env(safe-area-inset-bottom));text-align:center}
 .controls{display:flex;gap:10px;justify-content:center}
 button{border:0;border-radius:16px;padding:13px 18px;font-size:15px;font-weight:650;background:#e9e9ec;color:#222}
